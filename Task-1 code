@@ -1,0 +1,116 @@
+import java.util.Scanner;
+
+
+public class Calculator {
+    private static Scanner scanner = new Scanner(System.in);
+    
+    public static void main(String[] args) {
+        System.out.println("=== Java Console Calculator ===");
+        System.out.println("Supported operations: +, -, *, /, %, ^ (power)");
+        System.out.println("Enter 'exit' or 'quit' to terminate the program\n");
+        
+        while (true) {
+            try {
+                System.out.print("Enter operation (e.g., 5 + 3) or 'exit' to quit: ");
+                String input = scanner.nextLine().trim();
+                
+                
+                if (input.equalsIgnoreCase("exit") || input.equalsIgnoreCase("quit")) {
+                    System.out.println("Thank you for using the calculator. Goodbye!");
+                    break;
+                }
+                
+                
+                double result = parseAndCalculate(input);
+                System.out.println("Result: " + formatResult(result));
+                System.out.println();
+                
+            } catch (Exception e) {
+                System.out.println("Error: " + e.getMessage());
+                System.out.println("Please try again with a valid expression.\n");
+            }
+        }
+        
+        scanner.close();
+    }
+    
+    
+    private static double parseAndCalculate(String input) throws Exception {
+        // Remove all spaces
+        input = input.replaceAll("\\s+", "");
+        
+        if (input.isEmpty()) {
+            throw new Exception("Empty input. Please enter a valid expression.");
+        }
+        
+        
+        char operator = '\0';
+        int operatorIndex = -1;
+        
+        for (int i = 1; i < input.length(); i++) {
+            char c = input.charAt(i);
+            if (c == '+' || c == '-' || c == '*' || c == '/' || c == '%' || c == '^') {
+                operator = c;
+                operatorIndex = i;
+                break;
+            }
+        }
+        
+        if (operator == '\0' || operatorIndex == -1) {
+            throw new Exception("No valid operator found. Use +, -, *, /, %, or ^");
+        }
+        
+        String leftOperand = input.substring(0, operatorIndex);
+        String rightOperand = input.substring(operatorIndex + 1);
+        
+        if (leftOperand.isEmpty() || rightOperand.isEmpty()) {
+            throw new Exception("Invalid expression. Both operands are required.");
+        }
+        
+        double num1, num2;
+        try {
+            num1 = Double.parseDouble(leftOperand);
+            num2 = Double.parseDouble(rightOperand);
+        } catch (NumberFormatException e) {
+            throw new Exception("Invalid number format. Please enter valid numbers.");
+        }
+       
+        return performOperation(num1, num2, operator);
+    }
+    
+    
+    private static double performOperation(double num1, double num2, char operator) throws Exception {
+        switch (operator) {
+            case '+':
+                return num1 + num2;
+            case '-':
+                return num1 - num2;
+            case '*':
+                return num1 * num2;
+            case '/':
+                if (num2 == 0) {
+                    throw new Exception("Division by zero is not allowed.");
+                }
+                return num1 / num2;
+            case '%':
+                if (num2 == 0) {
+                    throw new Exception("Modulo by zero is not allowed.");
+                }
+                return num1 % num2;
+            case '^':
+                return Math.pow(num1, num2);
+            default:
+                throw new Exception("Unsupported operator: " + operator);
+        }
+    }
+    
+    
+    private static String formatResult(double result) {
+       
+        if (result == Math.floor(result) && !Double.isInfinite(result)) {
+            return String.valueOf((long) result);
+        } else {
+            return String.valueOf(result);
+        }
+    }
+}
